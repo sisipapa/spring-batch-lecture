@@ -2,7 +2,6 @@ package io.springbatch.springbatchlecture;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -13,18 +12,16 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Map;
-
 @RequiredArgsConstructor
 @Configuration
-public class JobExecutionConfiguration {
+public class StepConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
     @Bean
     public Job job(){
-        return jobBuilderFactory.get("job")
+        return jobBuilderFactory.get("Job")
                 .start(step1())
                 .next(step2())
                 .build();
@@ -33,13 +30,7 @@ public class JobExecutionConfiguration {
     @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
-                .tasklet(new Tasklet() {
-                    @Override
-                    public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
-                        System.out.println("step1 execute complete");
-                        return RepeatStatus.FINISHED;
-                    }
-                })
+                .tasklet(new CustomTasklet())
                 .build();
     }
 
@@ -50,8 +41,7 @@ public class JobExecutionConfiguration {
                     @Override
                     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
                         System.out.println("step2 execute complete");
-                        throw new RuntimeException("step2 has failed!!");
-//                        return RepeatStatus.FINISHED;
+                        return RepeatStatus.FINISHED;
                     }
                 })
                 .build();
