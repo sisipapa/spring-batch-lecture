@@ -17,7 +17,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Configuration
-public class JobParameterConfiguration {
+public class JobExecutionConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -36,17 +36,6 @@ public class JobParameterConfiguration {
                 .tasklet(new Tasklet() {
                     @Override
                     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
-                        
-                        // Contribution을 활용한 JobParameter 접근 - JobParameters로 리턴
-                        JobParameters jobParameters = stepContribution.getStepExecution().getJobExecution().getJobParameters();
-                        jobParameters.getString("name");
-                        jobParameters.getLong("seq");
-                        jobParameters.getDate("currentDateTime");
-                        jobParameters.getDouble("percent");
-                        
-                        // ChunkContext를 활용한 JobParameter 접근 - Map<String, Object>로 리턴
-                        Map<String, Object> jobParameters1 =  chunkContext.getStepContext().getJobParameters();
-
                         System.out.println("step1 execute complete");
                         return RepeatStatus.FINISHED;
                     }
@@ -61,7 +50,8 @@ public class JobParameterConfiguration {
                     @Override
                     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
                         System.out.println("step2 execute complete");
-                        return RepeatStatus.FINISHED;
+                        throw new RuntimeException("step2 has failed!!");
+//                        return RepeatStatus.FINISHED;
                     }
                 })
                 .build();
