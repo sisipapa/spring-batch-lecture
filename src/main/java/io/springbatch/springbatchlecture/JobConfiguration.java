@@ -2,11 +2,11 @@ package io.springbatch.springbatchlecture;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -15,14 +15,15 @@ import org.springframework.context.annotation.Configuration;
 
 @RequiredArgsConstructor
 @Configuration
-public class JobLauncherConfiguration {
+public class JobConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
     @Bean
     public Job BatchJob(){
-        return jobBuilderFactory.get("Job")
+        return jobBuilderFactory.get("BatchJob1")
+                .incrementer(new RunIdIncrementer())
                 .start(step1())
                 .next(step2())
                 .build();
@@ -34,7 +35,7 @@ public class JobLauncherConfiguration {
                 .tasklet(new Tasklet() {
                     @Override
                     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
-                        Thread.sleep(3000);
+//                        Thread.sleep(3000);
                         return RepeatStatus.FINISHED;
                     }
                 })
