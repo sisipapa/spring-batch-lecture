@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
 
 @RequiredArgsConstructor
 @Configuration
-public class ValidateConfiguration {
+public class PreventRestartConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -26,9 +26,7 @@ public class ValidateConfiguration {
         return this.jobBuilderFactory.get("BatchJob1")
                 .start(step1())
                 .next(step2())
-                .next(step3())
-//                .validator(new CustomJobParametersValidator())
-                .validator(new DefaultJobParametersValidator(new String[]{"name", "date"}, new String[]{"count"}))
+                .preventRestart()
                 .build();
     }
 
@@ -48,26 +46,12 @@ public class ValidateConfiguration {
                 .tasklet(new Tasklet() {
                     @Override
                     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
-                        System.out.println("step2 has executed");
+//                        throw new RuntimeException("step2 was failed");
                         return RepeatStatus.FINISHED;
                     }
                 })
                 .build();
     }
 
-    @Bean
-    public Step step3() {
-        return stepBuilderFactory.get("step3")
-                .tasklet(new Tasklet() {
-                    @Override
-                    public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
-//                        chunkContext.getStepContext().getStepExecution().setStatus(BatchStatus.FAILED);
-//                        stepContribution.setExitStatus(ExitStatus.STOPPED);
-                        System.out.println("step3 has executed");
-                        return RepeatStatus.FINISHED;
-                    }
-                })
-                .build();
-    }
 
 }
