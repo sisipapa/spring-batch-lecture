@@ -5,7 +5,7 @@ import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersIncrementer;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 public class CustomJobParametersIncrementer implements JobParametersIncrementer {
 
@@ -13,7 +13,7 @@ public class CustomJobParametersIncrementer implements JobParametersIncrementer 
 
     @Override
     public JobParameters getNext(JobParameters jobParameters) {
-        String id = format.format(LocalDateTime.now());
+        String id = format.format(new Date());
         return new JobParametersBuilder().addString("run.id", id).toJobParameters();
     }
 }
